@@ -1,0 +1,468 @@
+<!--
+=====================================================
+Project #2 - Bizarre Cave Problem
+=====================================================
+
+Authors:
+------------
+Gabriel Rivera - gabriel-rivera-457@csu.fullerton.edu
+Mitchell Norseth - mitchell2124@csu.fullerton.edu
+Mauricio Macias - mauricio.macias@csu.fullerton.edu
+
+Description:
+------------
+This program (explorer) is designed to find the coordinates (8,1,7) from the coordinates (16,0,0).
+There are limits to how each move from one coordinate to another is done.
+- Conservation - The sum of the coordinates never change.
+- Speed of Light - Each coordinate has a maximum limit, and can go no higher (x = 16, y = 9, z = 7).
+- Go for Broke - Either the source of one variable goes to 0, or the target variable goes to it's limit.
+-->
+<!doctype html><html><head>
+<title> Project 2 </title>
+</head>
+<body><h1>Cave Project</h1>
+<p> Explore the Bizarre Cave by clicking on the Explore button to travel rooms each coordinate at a time  </p>
+<script>
+// Bounds of coordinates(Speed of Light)
+var X_MAX = 16;
+var Y_MAX = 9;
+var Z_MAX = 7;
+//  The center(we need to go here)
+var X_Center = 8;
+var Y_Center = 1;
+var Z_Center = 7;
+// functions
+// displays if move is valid or not
+
+// checks if current coordinate is at center. If it is the program will exit.
+function checkIfAtCenter( centerX, centerY, centerZ, x, y, z)
+{
+	if(centerX == x && centerY == y && centerZ == z)
+	{
+		exit();
+	} 
+	else 
+	{
+		return false;
+	}
+}
+// prints current coordinate
+function printCoordinate(X,Y,Z)
+{
+	document.write("( ", X, ", ", Y, ", ", Z, " )");
+}
+
+//Prevents the current coordinate to show up in the possible moves.
+function pathChecker(possibleMoves, x,y,z)
+{
+	for (var i = 0; i < 16; i += 3)
+	{
+		if(duplicateChecker(possibleMoves[i], possibleMoves[i + 1], possibleMoves[i + 2], x, y, z) == true)
+		{
+			return false; //checks to see if there are duplicate points, and that the current coordinate doesn't display itself twice.
+		}
+	}
+	return true;
+}
+
+//Generates the possible moves that the explorer can make from a certain coordinate.
+function createPossibleMoves(X,Y,Z)
+{
+	document.write("These are the rooms he can move to: "); 
+	
+	var possibleMoves = new Array();
+	var possibleX;
+	var possibleY;
+	var possibleZ;
+	
+	//Several comparisons to limit what you can and can't do.
+	//In other words, it maintains the integrity of the Speed of Light and Go for Broke principles
+	//for all possible outcomes.
+	possibleX = X - Y_MAX;
+    if (possibleX >= 0 && possibleX < X_MAX)
+    {
+        possibleY = Y + Y_MAX;
+        if (possibleY >= 0 && possibleY <= Y_MAX && sumChecker(possibleX, possibleY, Z) == true && duplicateChecker(X, Y, Z, possibleX, possibleY, Z) == false && pathChecker(possibleMoves, possibleX, possibleY, Z) == true)
+        {
+            printCoordinate(possibleX, possibleY, Z);
+            possibleMoves.push(possibleX);
+			possibleMoves.push(possibleY);
+            possibleMoves.push(Z);
+        }
+    }
+
+    possibleX = X - Z_MAX;
+    if (possibleX >= 0 && possibleX < X_MAX)
+    {
+        possibleZ = Z + Z_MAX;
+        if (possibleZ >= 0 && possibleZ <= Z_MAX && sumChecker(possibleX, Y, possibleZ) == true && duplicateChecker(X, Y, Z, possibleX, Y, possibleZ) == false && pathChecker(possibleMoves, possibleX, Y, possibleZ) == true)
+        {
+            printCoordinate(possibleX, Y, possibleZ);
+            possibleMoves.push(possibleX);
+            possibleMoves.push(Y);
+            possibleMoves.push(possibleZ);       
+        }
+    }
+    
+    
+    possibleY = Y - X_MAX;
+    if (possibleY >= 0 && possibleY < Y_MAX)
+    {
+        possibleX = X + X_MAX;
+        if (possibleX >= 0 && possibleX <= X_MAX && sumChecker(possibleX, possibleY, Z) == true && duplicateChecker(X, Y, Z, possibleX, possibleY, Z) == false && pathChecker(possibleMoves, possibleX, possibleY, Z) == true)
+        {
+            printCoordinate(possibleX, possibleY, Z);
+            possibleMoves.push(possibleX);
+            possibleMoves.push(possibleY);
+            possibleMoves.push(Z);
+        }
+    }
+    
+    possibleY = Y - Z_MAX;
+    if (possibleY >= 0 && possibleY < Y_MAX)
+    {
+        possibleZ = Z + Z_MAX;
+        if (possibleZ >= 0 && possibleZ <= Z_MAX && sumChecker(X, possibleY, possibleZ) == true && duplicateChecker(X, Y, Z, X, possibleY, possibleZ) == false && pathChecker(possibleMoves, X, possibleY, possibleZ) == true)
+        {
+            printCoordinate(X, possibleY, possibleZ);
+            possibleMoves.push(X);
+            possibleMoves.push(possibleY);
+            possibleMoves.push(possibleZ);
+        }
+    }
+    
+    possibleZ = Z - X_MAX;
+    if (possibleZ >= 0 && possibleZ < Z_MAX)
+    {
+        possibleX = X + X_MAX;
+        if (possibleX >= 0 && possibleX <= X_MAX && sumChecker(possibleX, Y, possibleZ) == true && duplicateChecker(X, Y, Z, possibleX, Y, possibleZ) == false && pathChecker(possibleMoves, possibleX, Y, possibleZ) == true)
+        {
+            printCoordinate(possibleX, Y, possibleZ);
+            possibleMoves.push(possibleX);
+            possibleMoves.push(Y);
+            possibleMoves.push(possibleZ);
+        }
+    }
+    possibleZ = Z - Y_MAX;
+    if (possibleZ >= 0 && possibleZ < Z_MAX)
+    {
+        possibleY = Y + Y_MAX;
+        if (possibleY >= 0 && possibleY <= Y_MAX && sumChecker(X, possibleY, possibleZ) == true && duplicateChecker(X, Y, Z, X, possibleY, possibleZ) == false && pathChecker(possibleMoves, X, possibleY, possibleZ) == true)
+        {
+            printCoordinate(X, possibleY, possibleZ);
+            possibleMoves.push(X);
+            possibleMoves.push(possibleY);
+            possibleMoves.push(possibleZ);
+        }
+    }
+    
+    possibleX = X - X;
+    if (possibleX >= 0 && possibleX < X_MAX)
+    {
+        possibleY = Y + X;
+        if (possibleY >= 0 && possibleY <= Y_MAX && sumChecker(possibleX, possibleY, Z) == true && duplicateChecker(X, Y, Z, possibleX, possibleY, Z) == false && pathChecker(possibleMoves, possibleX, possibleY, Z) == true)
+        {
+            printCoordinate(possibleX, possibleY, Z);
+            possibleMoves.push(possibleX);
+            possibleMoves.push(possibleY);
+            possibleMoves.push(Z);
+        }
+    }
+    
+    if (possibleX >= 0 && possibleX < X_MAX)
+    {
+        possibleZ = Z + X;
+        if (possibleZ >= 0 && possibleZ <= Z_MAX && sumChecker(possibleX, Y, possibleZ) == true && duplicateChecker(X, Y, Z, possibleX, Y, possibleZ) == false && pathChecker(possibleMoves, possibleX, Y, possibleZ) == true)
+        {
+            printCoordinate(possibleX, Y, possibleZ);
+            possibleMoves.push(possibleX);
+            possibleMoves.push(Y);
+            possibleMoves.push(possibleZ);
+        }
+    }
+    
+    possibleY = Y - Y;
+    if (possibleY >= 0 && possibleY < Y_MAX)
+    {
+        possibleX = X + Y;
+        if (possibleX >= 0 && possibleX <= X_MAX && sumChecker(possibleX, possibleY, Z) == true && duplicateChecker(X, Y, Z, possibleX, possibleY, Z) == false && pathChecker(possibleMoves, possibleX, possibleY, Z) == true)
+        {
+            printCoordinate(possibleX, possibleY, Z);
+            possibleMoves.push(possibleX);
+            possibleMoves.push(possibleY);
+            possibleMoves.push(Z);
+        }
+    }
+    
+    if (possibleY >= 0 && possibleY < Y_MAX)
+    {
+        possibleZ = Z + Y;
+        if (possibleZ >= 0 && possibleZ <= Z_MAX && sumChecker(X, possibleY, possibleZ) == true && duplicateChecker(X, Y, Z, X, possibleY, possibleZ) == false && pathChecker(possibleMoves, X, possibleY, possibleZ) == true)
+        {
+            printCoordinate(X, possibleY, possibleZ);
+            possibleMoves.push(X);
+            possibleMoves.push(possibleY);
+            possibleMoves.push(possibleZ);
+        }
+    }
+    
+    possibleZ = Z - Z;
+    if (possibleZ >= 0 && possibleZ < Z_MAX)
+    {
+        possibleX = X + Z;
+        if (possibleX >= 0 && possibleX <= X_MAX && sumChecker(possibleX, Y, possibleZ) == true && duplicateChecker(X, Y, Z, possibleX, Y, possibleZ) == false && pathChecker(possibleMoves, possibleX, Y, possibleZ) == true)
+        {
+            printCoordinate(possibleX, Y, possibleZ);
+            possibleMoves.push(possibleX);
+            possibleMoves.push(Y);
+            possibleMoves.push(possibleZ);
+        }
+    }
+    
+    if (possibleZ >= 0 && possibleZ < Z_MAX)
+    {
+        possibleY = Y + Z;
+        if (possibleY >= 0 && possibleY <= Y_MAX && sumChecker(X, possibleY, possibleZ) == true && duplicateChecker(X, Y, Z, X, possibleY, possibleZ) == false && pathChecker(possibleMoves, X, possibleY, possibleZ) == true)
+        {
+            printCoordinate(X, possibleY, possibleZ);
+            possibleMoves.push(X);
+            possibleMoves.push(possibleY);
+            possibleMoves.push(possibleZ);
+        }
+    }
+    
+    for (var i = 1; i < 9; i++)
+    {
+        possibleX = X - i;
+        if (possibleX >= 0 && possibleX <= X_MAX - i)
+        {
+            possibleY = Y + i;
+            if (possibleY == Y_MAX && sumChecker(possibleX, possibleY, Z) == true && duplicateChecker(X, Y, Z, possibleX, possibleY, Z) == false && pathChecker(possibleMoves, possibleX, possibleY, Z) == true)
+            {
+                printCoordinate(possibleX, possibleY, Z);
+                possibleMoves.push(possibleX);
+                possibleMoves.push(possibleY);
+                possibleMoves.push(Z);
+            }
+        }
+        
+        if (possibleX >= 0 && possibleX <= X_MAX - i)
+        {
+            possibleZ = Z + i;
+            if (possibleZ == Z_MAX && sumChecker(possibleX, Y, possibleZ) == true && duplicateChecker(X, Y, Z, possibleX, Y, possibleZ) == false && pathChecker(possibleMoves, possibleX, Y, possibleZ) == true)
+            {
+                printCoordinate(possibleX, Y, possibleZ);
+                possibleMoves.push(possibleX);
+                possibleMoves.push(Y);
+                possibleMoves.push(possibleZ);
+            }
+        }
+        
+        possibleY = Y - i;
+        if (possibleY >= 0 && possibleY <= Y_MAX - i)
+        {
+            possibleZ = Z + i;
+            if (possibleZ == Z_MAX && sumChecker(X, possibleY, possibleZ) == true && duplicateChecker(X, Y, Z, X, possibleY, possibleZ) == false && pathChecker(possibleMoves, X, possibleY, possibleZ) == true)
+            {
+                printCoordinate(X, possibleY, possibleZ);
+                possibleMoves.push(X);
+                possibleMoves.push(possibleY);
+                possibleMoves.push(possibleZ);
+            }
+        }
+        
+        if (possibleY >= 0 && possibleY <= Y_MAX - i)
+        {
+            possibleX = X + i;
+            if (possibleX == X_MAX && sumChecker(possibleX, possibleY, Z) == true && duplicateChecker(X, Y, Z, possibleX, possibleY, Z) == false && pathChecker(possibleMoves, possibleX, possibleY, Z) == true)
+            {
+                printCoordinate(possibleX, possibleY, Z);
+                possibleMoves.push(possibleX);
+                possibleMoves.push(possibleY);
+                possibleMoves.push(Z);
+            }
+        }
+        
+        possibleZ = Z - i;
+        if (possibleZ >= 0 && possibleZ <= Z_MAX - i)
+        {
+            possibleX = X + i;
+            if (possibleX == X_MAX && sumChecker(possibleX, Y, possibleZ) == true && duplicateChecker(X, Y, Z, possibleX, Y, possibleZ) == false && pathChecker(possibleMoves, possibleX, Y, possibleZ) == true)
+            {
+                printCoordinate(possibleX, Y, possibleZ);
+                possibleMoves.push(possibleX);
+                possibleMoves.push(Y);
+                possibleMoves.push(possibleZ);
+            }
+        }
+        
+        if (possibleZ >= 0 && possibleZ <= Z_MAX - i)
+        {
+            possibleY = Y + i;
+            if (possibleY == Y_MAX && sumChecker(X, possibleY, possibleZ) == true && duplicateChecker(X, Y, Z, X, possibleY, possibleZ) == false && pathChecker(possibleMoves, X, possibleY, possibleZ) == true)
+            {
+                printCoordinate(X, possibleY, possibleZ);
+                possibleMoves.push(X);
+                possibleMoves.push(possibleY);
+                possibleMoves.push(possibleZ);
+            }
+        }
+    }
+    return possibleMoves; //once these comparisons are done we have only the truly possible moves the explorer can make.
+}
+
+//Function to get a random integer.
+function getRandomInt(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+//Function that will choose random coordinates to move to... in hope that it will eventually find the center.
+function checkMove(possibleMoves, X, Y, Z)
+{
+	var newValues = new Array();
+	var totalCoordinates = possibleMoves.length / 3;
+
+	var coordinateChoice =  getRandomInt(1, totalCoordinates);
+
+	document.write("choice: ", coordinateChoice);
+    document.write("<br>")
+
+    
+	if (coordinateChoice == 1)
+	{
+		var data1 = [];
+
+        for (var i = 0; i < 3; i++)
+        {
+			var a = possibleMoves[possibleMoves.length-1];
+			data1.push(a);
+			possibleMoves.pop();
+        }
+		
+        return data1;
+	}
+	
+	//Since our algorithm is randomized, we need to comment out Choice #2, or the 
+	//program will run seemingly forever with the exact choices to get to the center being truly difficult to reach.
+	/*
+	else if (coordinateChoice == 2)
+	{
+        var data2 = [];
+
+        for (var i = 0; i < 3; i++)
+        {
+			var a = possibleMoves[possibleMoves.length-4];
+			data2.push(a);
+			possibleMoves.pop();
+        }
+		
+        return data2;
+	}*/
+	
+	
+	else if (coordinateChoice == 3)
+	{
+        var data3 = [];
+
+        for (var i = 0; i < 3; i++)
+        {
+			var a = possibleMoves[possibleMoves.length-7];
+			data3.push(a);
+			possibleMoves.pop();
+        }
+		
+        return data3;
+	}
+	
+	
+	else if (coordinateChoice == 4)
+	{
+        var data4 = [];
+
+        for (var i = 0; i < 3; i++)
+        {
+			var a = possibleMoves[possibleMoves.length-10];
+			data4.push(a);
+			possibleMoves.pop();
+        }
+		
+        return data4;
+	}
+	
+	
+	else if (coordinateChoice == 5)
+	{
+        var data5 = [];
+
+        for (var i = 0; i < 3; i++)
+        {
+			var a = possibleMoves[possibleMoves.length-14];
+			data5.push(a);
+			possibleMoves.pop();
+        }
+		
+        return data5;
+	}
+	
+
+  
+}
+// conservation the sum of the coordinates never change.
+function sumChecker(x,y,z)
+{
+	var sum = x + y + z;
+	if(sum != 16)
+	{
+		return false;
+	}
+	return true;
+}
+
+//Checks and gets rid of duplicate coordinates.
+function duplicateChecker(X,Y,Z, x,y,z)
+{
+	if(X == x && Y == y && Z == z)
+    {
+		return true;
+	}
+	return false;
+}
+
+// starting out with (16,0,0)
+var X = X_MAX;// x = 16
+var Y = 0; // y = 0
+var Z = 0; // z = 0
+
+//Basically the main of our program that writes to the screen and calls the
+//necessary functions.
+var centerChecker = false;
+// if its at center the loop will break
+while(centerChecker === false)
+{
+	document.write("<br>");
+	document.write("The explorer is currently at ");
+	printCoordinate(X,Y,Z);
+	document.write("<br>"); // html new line
+	document.write("----------------------------------");
+	document.write("<br>");
+	var possibleMoves = createPossibleMoves(X,Y,Z);
+	document.write("<br>"); // html new line
+	document.write("----------------------------------");
+	document.write("<br>");
+	var newCoords = checkMove(possibleMoves); //Updates our coordinates each loop.
+
+	X = newCoords.pop();
+    Y = newCoords.pop();
+    Z = newCoords.pop();
+	
+	document.write("<br>");
+	centerChecker = checkIfAtCenter(X_Center,Y_Center,Z_Center,X,Y,Z);
+}
+
+document.write("You have made it to the center! Congrats!");
+
+</script>
+</body>
+</html>
